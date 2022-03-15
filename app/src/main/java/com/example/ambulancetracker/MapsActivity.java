@@ -5,6 +5,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,6 +15,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,6 +35,9 @@ import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,6 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ActivityMapsBinding binding;
     private LocationListener locationListener;
     private LocationManager locationManager;
+    SharedPreferences sharedpreferences;
 
     private final long MIN_TIME = 1000; // 1 second
     private final long MIN_DIST = 5; // 5 Meters
@@ -46,7 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        sharedpreferences = getSharedPreferences(ConfigSetting.MyPREFERENCES, Context.MODE_PRIVATE);
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -54,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
 
@@ -126,6 +140,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,18));
                     float dis=distFrom(latLng.latitude,latLng.longitude,11.868323,79.704893);
                     Toast.makeText(MapsActivity.this,"Distance from Current loaction is : "+dis,Toast.LENGTH_LONG).show();
+                    if(dis<5){
+                        RequestQueue queue = Volley.newRequestQueue(MapsActivity.this);
+                        JSONObject data=new JSONObject();
+                        String id=sharedpreferences.getString(ConfigSetting.UserId,"").trim();
+                        try {
+                            data.put("userId",id);
+                            data.put("lat",latLng.latitude);
+                            data.put("lang",latLng.longitude);
+                            data.put("signalLat","11.868323");
+                            data.put("signalLong","79.704893");
+                            data.put("dstlang","79.707897");
+                            data.put("dstlat","11.867840");
+                            data.put("direction","Left");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        JsonObjectRequest request =new JsonObjectRequest(Request.Method.POST, ConfigSetting.host+"/Home/AddLocation/", data,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+
+                                            Toast.makeText(MapsActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(getApplicationContext(),error.getMessage().toString(),Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        queue.add(request);
+                    }
                 }
                 catch (SecurityException e){
                     e.printStackTrace();
