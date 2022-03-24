@@ -111,17 +111,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         // Add polylines to the map.
         // Polylines are useful to show a route or some other connection between points.
-        Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
-                .clickable(true)
-                .add(
-                        new LatLng(11.867095, 79.704679),
-                        new LatLng(11.867840, 79.704861),
-                        new LatLng(11.868323, 79.704893),
-                        new LatLng(11.868260, 79.705623),
-                        new LatLng(11.868113, 79.706524),
-                        new LatLng(11.867840, 79.707897)));
-        polyline1.setTag("Hospital Route");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(11.867840,79.707897)).title("My Position"));
 
 
 
@@ -172,6 +161,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         });
                         queue.add(request);
+
                     }
                 }
                 catch (SecurityException e){
@@ -196,6 +186,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .add(
+                        new LatLng(11.867095, 79.704679),
+                        new LatLng(11.867840, 79.704861),
+                        new LatLng(11.868323, 79.704893),
+                        new LatLng(11.868260, 79.705623),
+                        new LatLng(11.868113, 79.706524),
+                        new LatLng(11.867840, 79.707897)));
+        polyline1.setTag("Hospital Route");
+        mMap.addMarker(new MarkerOptions().position(new LatLng(11.867840,79.707897)).title("My Position"));
 
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIST, locationListener);
