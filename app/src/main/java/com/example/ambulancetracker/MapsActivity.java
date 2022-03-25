@@ -127,9 +127,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         liveMarker.setPosition(latLng);
                     }
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,18));
-                    float dis=distFrom(latLng.latitude,latLng.longitude,11.868323,79.704893);
+                    float dis=distFrom(latLng.latitude,latLng.longitude,11.929948,79.806987);
                     Toast.makeText(MapsActivity.this,"Distance from Current loaction is : "+dis,Toast.LENGTH_LONG).show();
-                    if(dis<5){
+                    if(dis<10){
                         RequestQueue queue = Volley.newRequestQueue(MapsActivity.this);
                         JSONObject data=new JSONObject();
                         String id=sharedpreferences.getString(ConfigSetting.UserId,"").trim();
@@ -137,10 +137,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             data.put("userId",id);
                             data.put("lat",latLng.latitude);
                             data.put("lang",latLng.longitude);
-                            data.put("signalLat","11.868323");
-                            data.put("signalLong","79.704893");
-                            data.put("dstlang","79.707897");
-                            data.put("dstlat","11.867840");
+                            data.put("signalLat","11.929948");
+                            data.put("signalLong","79.806987");
+                            data.put("dstlang","79.807562");
+                            data.put("dstlat","11.930379");
                             data.put("direction","Left");
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -189,14 +189,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                 .clickable(true)
                 .add(
-                        new LatLng(11.867095, 79.704679),
-                        new LatLng(11.867840, 79.704861),
-                        new LatLng(11.868323, 79.704893),
-                        new LatLng(11.868260, 79.705623),
-                        new LatLng(11.868113, 79.706524),
-                        new LatLng(11.867840, 79.707897)));
+                        new LatLng(11.913013, 79.636498),
+                        new LatLng(11.913908, 79.636086),
+                        new LatLng(11.914076, 79.634368),
+                        new LatLng(11.915000, 79.634154),
+                        new LatLng(11.915504, 79.634089),
+                        new LatLng(11.918258, 79.633342)));
         polyline1.setTag("Hospital Route");
-        mMap.addMarker(new MarkerOptions().position(new LatLng(11.867840,79.707897)).title("My Position"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(11.918275,79.633939)).title("Hospital 1"));
 
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIST, locationListener);
