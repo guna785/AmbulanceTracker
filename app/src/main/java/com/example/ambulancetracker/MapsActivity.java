@@ -129,7 +129,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,18));
                     float dis=distFrom(latLng.latitude,latLng.longitude,11.929948,79.806987);
                     Toast.makeText(MapsActivity.this,"Distance from Current loaction is : "+dis,Toast.LENGTH_LONG).show();
-                    if(dis<10){
+                    if(dis<20){
                         RequestQueue queue = Volley.newRequestQueue(MapsActivity.this);
                         JSONObject data=new JSONObject();
                         String id=sharedpreferences.getString(ConfigSetting.UserId,"").trim();
@@ -152,6 +152,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     public void onResponse(JSONObject response) {
 
                                             Toast.makeText(MapsActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(getApplicationContext(),error.getMessage().toString(),Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        queue.add(request);
+
+                    }
+                    else{
+                        RequestQueue queue = Volley.newRequestQueue(MapsActivity.this);
+                        JSONObject data=new JSONObject();
+                        String id=sharedpreferences.getString(ConfigSetting.UserId,"").trim();
+                        try {
+                            data.put("userId",id);
+                            data.put("lat",latLng.latitude);
+                            data.put("lang",latLng.longitude);
+                            data.put("signalLat","11.929948");
+                            data.put("signalLong","79.806987");
+                            data.put("dstlang","79.807562");
+                            data.put("dstlat","11.930379");
+                            data.put("direction","None");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        JsonObjectRequest request =new JsonObjectRequest(Request.Method.POST, ConfigSetting.host+"/Home/AddLocation/", data,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+
+                                        Toast.makeText(MapsActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
 
                                     }
                                 }, new Response.ErrorListener() {
